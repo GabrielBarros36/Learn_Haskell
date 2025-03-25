@@ -1,3 +1,5 @@
+import Data.List
+
 absolute num =
     if num > 0 
     then num
@@ -6,7 +8,6 @@ absolute num =
 inc num = 
     num + 1
 
-double :: Num a => a -> a
 double num = 
     num * 2
 
@@ -20,7 +21,6 @@ weird n =
         3*n + 1
 
 -- Rewrite this using a lambda function instead of where
-doubleDouble :: Num a => a -> a
 doubleDouble x =
     dubs * 2
     where dubs = x * 2
@@ -62,9 +62,58 @@ ifEven someFunction x =
     else x
 
 -- Now we can use our double function from before
+ifEvenDouble :: Integral t => t -> t
 ifEvenDouble x = 
     ifEven double x
 
 -- Write a lambda function for cubing x and pass it to ifEven
--- in ghci: ifEven (\x -> x*x*x) 6
+-- ghci: ifEven (\x -> x*x*x) 6
 
+-- Cool example for first-class functions: the sortby function.
+-- It takes 2 arguments: the collection to be sorted 
+-- AND a function to compare two objects in that collection.
+-- Let's define a function to compare names
+
+compareLastNames name1 name2 =
+    if lastName1 > lastName2
+        then GT
+    else if lastName1 < lastName2
+        then LT
+    else EQ
+    where 
+        lastName1 = snd name1 
+        lastName2 = snd name2 -- fst and snd access 1st and 
+                              -- 2nd elements of a tuple
+names = [ ("Bob", "Ross"),
+          ("Bob", "Widlar"),
+          ("Gabriel", "Romanini")]
+-- ghci: sortBy compareLastNames names
+
+-- Q4.1: Rewrite compareLastNames by using compare
+compareLastNames2 name1 name2 =
+    case compare lastName1 lastName2 of
+        LT -> LT
+        EQ -> EQ
+        GT -> GT
+    where
+        lastName1 = snd name1
+        lastName2 = snd name2
+
+
+-- Q4.2: 
+dcOffice name =
+    nameText ++ " - " ++ "Washington, DC"
+    where 
+        nameText = fst name ++ " " ++ snd name ++ ", Esq."
+
+getLocationFunction location = 
+    case location of
+        "dc" -> dcOffice
+        _ -> (\name -> (fst name) ++ " " ++ (snd name))
+
+addressLetter name location =
+    func name
+    where func = getLocationFunction location
+-- Now if we need to add different locations with different
+-- address formatting rules we can easily add cases to 
+-- getLocationFunction
