@@ -1,4 +1,5 @@
 import Data.List
+import System.Posix.Internals (lstat)
 
 absolute num =
     if num > 0 
@@ -218,4 +219,57 @@ inFirstHalf thing list = elem thing (take (len `div` 2) list)
     where len = length list
 
 -- Lesson 7
+-- Implementing my own version of take
+myTake numElements list =
+    reverse (drop (len - numElements) (reverse list))
+    where len = length list
+-- Implementing a recursive version of take
+recursiveTake numElements list =
+    if numElements == length list
+        then
+            list
+    else
+        recursiveTake (numElements) (reverse (drop 1 (reverse list)))
+-- Implement GCD function recursively
+myGCD a b = 
+    if remainder == 0
+        then b
+    else
+        myGCD b remainder
+    where remainder = mod a b
+
+-- Pattern matching: implement our own head function
+myHead (x:xs) = x -- Since any list is just a head consed
+                  -- to the rest of the list
+myHead [] = error "No head for empty list" -- handling edge case
+
+-- Q7.1: The tail function in Haskell returns an error when called 
+--      on an empty list. Modify myTail so that it does handle the case 
+--      of an empty list by returning the empty list.
+myTail (_:xs) = xs
+myTail [] = []
+
+-- Q7.2: Rewrite myGCD by using pattern matching.
+myGCD2 a 0 = a
+myGCD2 a b = myGCD b (a `mod` b)
+
+-- Lesson 8
+-- Write a recursive implementation of drop
+myDrop numElements list =
+    case numElements of
+        0 -> list
+        1 -> tail list
+        _ -> myDrop (numElements-1) (tail list)
+
+-- Book example: recursive implementation of length
+myLength [] = 0
+myLength list = 1 + myLength (tail list)
+myLength (x:xs) = 1 + myLength xs -- eq. to previous line but 
+                                  --w/ pattern matching
+
+recursiveTake2 _ [] = []
+recursiveTake2 0 _ = []
+recursiveTake2 n (x:xs) =
+    x:rest
+    where rest = recursiveTake2 (n-1) xs
 
