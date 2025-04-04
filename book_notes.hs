@@ -1,4 +1,5 @@
 import Data.List
+import Data.Char
 import System.Posix.Internals (lstat)
 
 absolute num =
@@ -272,4 +273,57 @@ recursiveTake2 0 _ = []
 recursiveTake2 n (x:xs) =
     x:rest
     where rest = recursiveTake2 (n-1) xs
+
+-- Lesson 9
+-- The map function take a function and a list as args and applies
+-- that function to each element in the list.
+
+-- map ("a " ++) ["train", "plane"]
+-- Implement the above without map
+addAnA [] = []
+addAnA (x:xs) = ("a "++x):addAnA xs
+
+-- map (^2) [1,2,3]
+squareAll [] = []
+squareAll (x:xs) = (x^2):squareAll xs
+
+-- we can actually implement map as such:
+myMap f [] = []
+myMap f (x:xs) = (f x):myMap f xs
+
+-- filter also takes in a function and a list; however, the function must
+-- return only True or False. filter keeps only the list elements that pass
+-- the test
+
+-- foldl takes a list and reduces it to a single value
+-- takes three args: a binary function, an initial value, and a list
+-- It works by applying the function to the init value and the head of
+-- the list, then repeating that using the result of that operation 
+-- in place of the initial value.
+
+-- Write the function myProduct, which calculates the product of
+-- a list of numbers
+myProduct xs = foldl (*) 1 xs
+
+-- Reverse a list of numbers with the given rcons helper function
+rcons x y = y:x
+myReverse xs = foldl rcons [] xs
+
+-- Q9.1: User filter and length to re-create the elem function
+myElem element xs = (length (filter (\x -> x == element) xs)) > 0
+-- Q9.2: Make an isPalindrome function that disregards spaces and capital
+-- vs. lowercase letters
+isPalindrome xs =  reduced xs == reverse (reduced xs)
+    where
+        reduced xs = (noCapitalsWord (noSpaceWord xs))
+        noCapitalsWord xs = map toLower xs
+        noSpaceWord xs = filter (/=' ') xs
+-- Q9.3: The harmonic series is 1/1 + 1/2 + 1/3 +... 
+-- Write a function harmonic that takes an argument n and calculates the
+-- sum of the series to n. Use lazy evaluation.
+harmonic n = 
+    mySum (take n series)
+    where 
+        series = map (\x -> 1/x) [1..]
+        mySum xs = foldl (+) 0 xs 
 
